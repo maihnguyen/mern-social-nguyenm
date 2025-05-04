@@ -6,7 +6,7 @@ export const createEvent = async (req, res) => {
     const { title, description, date, time, location, invitedUsers } = req.body;
 
     const event = await Event.create({
-      creatorId: req.user._id,
+      creatorId: req.auth._id,
       title,
       description,
       date,
@@ -20,15 +20,16 @@ export const createEvent = async (req, res) => {
     await Promise.all(invitedUsers.map(userId =>
       Invitation.create({
         eventId: event._id,
-        inviterId: req.user._id,
+        inviterId: req.auth._id,
         inviteeId: userId
       })
     ));
 
     res.status(201).json(event);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to create event' });
-  }
+    } catch (err) {
+        console.error('❌ Event creation error:', err);  // full stack trace
+        res.status(500).json({ error: err.message });     // send useful message back
+    }
 };
 
 export const getEventById = async (req, res) => {
@@ -48,9 +49,9 @@ export const getUserEvents = async (req, res) => {
   try {
     const events = await Event.find({
       $or: [
-        { creatorId: req.user._id },
-        { invitedUsers: req.user._id },
-        { attendees: req.user._id }
+        { creatorId: req.auth._id },
+        { invitedUsers: req.auth._id },
+        { attendees: req.auth._id }
       ]
     });
 
@@ -60,19 +61,44 @@ export const getUserEvents = async (req, res) => {
   }
 };
 
+export const updateEvent = async (req, res) => {
+    try {
+        const updated = await Event.findOneAndUpdate(
+        { _id: req.params.eventId, creatorId: req.auth._id },
+        req.body,
+        { new: true }
+        );
+        if (!updated) return res.status(404).json({ error: 'Event not found or unauthorized' });
+        res.json(updated);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to update event' });
+    }
+};
+
+export const deleteEvent = async (req, res) => {
+    try {
+        const deleted = await Event.findOneAndDelete({ _id: req.params.eventId, creatorId: req.auth._id });
+        if (!deleted) return res.status(404).json({ error: 'Event not found or unauthorized' });
+        res.json({ message: 'Event deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to delete event' });
+    }
+};
+  
+
 export const respondToInvitation = async (req, res) => {
   try {
     const { eventId, response } = req.body; // 'Accepted' or 'Declined'
 
     const invitation = await Invitation.findOneAndUpdate(
-      { eventId, inviteeId: req.user._id },
+      { eventId, inviteeId: req.auth._id },
       { status: response },
       { new: true }
     );
 
     if (response === 'Accepted') {
       await Event.findByIdAndUpdate(eventId, {
-        $addToSet: { attendees: req.user._id }
+        $addToSet: { attendees: req.auth._id }
       });
     }
 

@@ -1,16 +1,44 @@
-# MERN Social 2.0
-- *Looking for the first edition code? [Check here](https://github.com/shamahoque/mern-social/tree/master)*
+# MERN Social 2.0 – With Event Invitations 🎉
 
-A simple social media application with users, posts, likes and comments - developed using React, Node, Express and MongoDB. 
+A full-stack social media app built with **MongoDB**, **Express**, **React**, and **Node** (MERN) that now includes an **event invitation system**! Users can follow others, create posts, and **host or join events** via invitations.
 
-![MERN Social](https://s3.amazonaws.com/mernbook/git+/social.png "MERN Social")
+![MERN Social Event Feature](https://your-event-demo-image-url-if-any)
 
-### [Live Demo](http://social2.mernbook.com/ "MERN Social")
+### 🚀 [Live Demo](https://mern-social-backend-nguyenm.onrender.com)
 
-#### What you need to run this code
-1. Node (13.12.0)
-2. NPM (6.14.4) or Yarn (1.22.4)
-3. MongoDB (4.2.0)
+## ✨ Key Features
+
+- ✅ User Authentication (JWT)
+- 🧑‍🤝‍🧑 Follow/Unfollow Users
+- 📝 Post and Comment System
+- ❤️ Like System
+- 🗓️ **Event Creation and Management**
+  - Create events with title, time, location, and invited users
+  - Invite from your "following" list
+  - Users receive **invitations** and can accept or decline
+  - Only accepted events appear on the user’s event list
+  - Host can edit or delete the event
+  - Attendee list is visible per event
+
+## 🛠 Tech Stack
+
+- **Frontend**: React + Material UI
+- **Backend**: Node.js + Express
+- **Database**: MongoDB + Mongoose
+- **Auth**: JSON Web Token (JWT)
+
+## 📦 Getting Started
+
+### Requirements
+- Node.js (>= 14)
+- MongoDB (>= 4.2)
+
+### Setup
+```bash
+git clone https://github.com/yourusername/mern-social-events.git
+cd mern-social-events
+npm install
+npm run development
 
 ####  How to run this code
 1. Make sure MongoDB is running on your system 

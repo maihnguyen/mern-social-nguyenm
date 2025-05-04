@@ -23,7 +23,18 @@ const config = {
             {
                 test: /\.(ttf|eot|svg|gif|jpg|png)(\?[\s\S]+)?$/,
                 use: 'file-loader'
-            }
+            },
+            {
+                test: /\.(jpe?g|png|gif|svg)$/,
+                use: [
+                  {
+                    loader: 'file-loader',
+                    options: {
+                      name: 'assets/[name].[hash].[ext]'
+                    }
+                  }
+                ]
+              } 
         ]
     }
 }

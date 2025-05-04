@@ -26,9 +26,8 @@ import devBundle from './devBundle'
 const CURRENT_WORKING_DIR = process.cwd()
 const app = express()
 
-if (process.env.NODE_ENV !== 'production') {
-  devBundle.compile(app)
-}
+//comment out before building for production
+devBundle.compile(app)
 
 // parse body params and attache them to req.body
 app.use(bodyParser.json())

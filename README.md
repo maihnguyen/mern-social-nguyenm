@@ -2,8 +2,6 @@
 
 A full-stack social media app built with **MongoDB**, **Express**, **React**, and **Node** (MERN) that now includes an **event invitation system**! Users can follow others, create posts, and **host or join events** via invitations.
 
-![MERN Social Event Feature](https://your-event-demo-image-url-if-any)
-
 ### 🚀 [Live Demo](https://mern-social-backend-nguyenm.onrender.com)
 
 ## ✨ Key Features

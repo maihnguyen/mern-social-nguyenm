@@ -20,7 +20,7 @@
   "scripts": {
     "development": "set NODE_OPTIONS=--openssl-legacy-provider && nodemon --exec \"npx webpack --mode=development --config webpack.config.server.js && node ./dist/server.generated.js\"",
     "build": "webpack --config webpack.config.client.production.js && webpack --mode=production --config webpack.config.server.js",
-    "start": "NODE_ENV=production node ./dist/server.generated.js"
+    "start": "cross-env NODE_ENV=production node ./dist/server.generated.js"
   },
   "engines": {
     "node": ">=14.0.0",

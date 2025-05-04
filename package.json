@@ -19,8 +19,8 @@
   "main": "./dist/server.generated.js",
   "scripts": {
     "development": "set NODE_OPTIONS=--openssl-legacy-provider && nodemon --exec \"npx webpack --mode=development --config webpack.config.server.js && node ./dist/server.generated.js\"",
-    "build": "webpack --config webpack.config.client.production.js && webpack --mode=production --config webpack.config.server.js",
-    "start": "cross-env NODE_ENV=production node ./dist/server.generated.js"
+    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider webpack --config webpack.config.client.production.js && cross-env NODE_OPTIONS=--openssl-legacy-provider webpack --mode=production --config webpack.config.server.js",
+    "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=production node ./dist/server.generated.js"
   },
   "engines": {
     "node": ">=14.0.0",
@@ -31,6 +31,7 @@
     "@babel/preset-env": "7.9.0",
     "@babel/preset-react": "7.9.4",
     "babel-loader": "8.1.0",
+    "cross-env": "^7.0.3",
     "file-loader": "6.0.0",
     "nodemon": "2.0.2",
     "webpack": "^4.47.0",

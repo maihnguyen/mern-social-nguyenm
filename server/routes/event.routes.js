@@ -1,11 +1,7 @@
 import express from 'express';
-import {
-  createEvent,
-  getEventById,
-  getUserEvents,
-  respondToInvitation
-} from '../controllers/event.controller.js';
-import requireSignin from '../middleware/auth.js';
+import { createEvent, getEventById, getUserEvents, respondToInvitation } from '../controllers/event.controller.js';
+import authCtrl from '../controllers/auth.controller.js'; 
+const { requireSignin } = authCtrl;
 
 const router = express.Router();
 

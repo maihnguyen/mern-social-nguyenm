@@ -5,6 +5,7 @@ import { read } from '../user/api-user';
 import {
   Box, Button, TextField, Typography, FormGroup, FormControlLabel, Checkbox
 } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 
 export default function CreateEvent() {
   const [values, setValues] = useState({
@@ -14,6 +15,7 @@ export default function CreateEvent() {
   });
 
   const jwt = auth.isAuthenticated();
+  const history = useHistory();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -51,8 +53,12 @@ export default function CreateEvent() {
     };
 
     createEvent(event, { t: jwt.token }).then(data => {
-      if (data.error) console.error('❌ Failed to create event:', data.error);
-      else alert('✅ Event created successfully');
+        if (data.error) {
+            console.error('Failed to create event:', data.error);
+        } else {
+            alert('Event created successfully');
+            history.push('/events');  // Redirect here
+        }
     });
   };
 

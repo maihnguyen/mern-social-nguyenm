@@ -64,7 +64,7 @@ function EventList({ history }) {
             <ListItem key={event._id} divider>
               <ListItemText
                 primary={event.title}
-                secondary={`${event.date} at ${event.time} | ${event.location}`}
+                secondary={`📍 ${event.location} | 🗓️ ${event.date} | ⏰ ${event.time}`}
               />
               {event.creatorId === jwt.user._id && (
                 <ListItemSecondaryAction>

@@ -1,45 +1,84 @@
 import React, { useEffect, useState } from 'react';
-import { getInvitations, respondToInvitation } from './api-event';
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
+  List,
+  ListItem,
+  ListItemText
+} from '@material-ui/core';
 import auth from '../auth/auth-helper';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import { getInvitations, respondToInvitation } from './api-event';
 
 export default function Invitations() {
-  const [invites, setInvites] = useState([]);
+  const [invitations, setInvitations] = useState([]);
+  const jwt = auth.isAuthenticated();
 
   useEffect(() => {
-    const jwt = auth.isAuthenticated();
     getInvitations({ t: jwt.token }).then(data => {
-      if (data.error) console.error(data.error);
-      else setInvites(data);
+      if (!data.error) {
+        setInvitations(data);
+      } else {
+        console.error(data.error);
+      }
     });
   }, []);
-
-  const handleRSVP = (eventId, response) => {
-    const jwt = auth.isAuthenticated();
+  
+  const handleResponse = (eventId, response) => {
     respondToInvitation({ eventId, response }, { t: jwt.token }).then(data => {
-      alert(data.message);
+      if (data && !data.error) {
+        // Refetch full list instead of patching manually
+        getInvitations({ t: jwt.token }).then(updated => {
+          if (!updated.error) {
+            setInvitations(updated);
+          } else {
+            console.error(updated.error);
+          }
+        });
+      } else {
+        console.error(data?.error);
+      }
     });
   };
-
+  
   return (
-    <div style={{ maxWidth: 600, margin: '2rem auto' }}>
-      <Typography variant="h5" gutterBottom>Event Invitations</Typography>
-      <List>
-        {invites.map(invite => (
-          <ListItem key={invite._id}>
-            <ListItemText
-              primary={invite.eventId.title}
-              secondary={`Status: ${invite.status}`}
-            />
-            <Button onClick={() => handleRSVP(invite.eventId._id, 'Accepted')}>Accept</Button>
-            <Button onClick={() => handleRSVP(invite.eventId._id, 'Declined')}>Decline</Button>
-          </ListItem>
-        ))}
-      </List>
-    </div>
+    <Box style={{ maxWidth: 700, margin: '2rem auto' }}>
+      <Typography variant="h5" gutterBottom>
+        Event Invitations
+      </Typography>
+
+      {invitations.length === 0 ? (
+        <Typography>No pending invitations.</Typography>
+      ) : (
+        <Paper elevation={3}>
+          <List>
+            {invitations.map(invite => (
+              <ListItem key={invite._id} divider>
+                <ListItemText
+                  primary={invite.eventId.title}
+                  secondary={`📍 ${invite.eventId.location} | 🗓️ ${invite.eventId.date} | ⏰ ${invite.eventId.time}`}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleResponse(invite.eventId._id, 'Accepted')}
+                  style={{ marginRight: '0.5rem' }}
+                >
+                  Accept
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => handleResponse(invite.eventId._id, 'Declined')}
+                >
+                  Decline
+                </Button>
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+      )}
+    </Box>
   );
 }

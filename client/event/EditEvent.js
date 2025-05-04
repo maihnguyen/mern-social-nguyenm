@@ -35,7 +35,7 @@ export default function EditEvent() {
     const abortController = new AbortController();
     const signal = abortController.signal;
 
-    readEvent(eventId, jwt).then((data) => {
+    readEvent(eventId, { t: jwt.token }).then((data) => {
         if (data && !data.error) {
           setValues((v) => ({
             ...v,
@@ -166,18 +166,19 @@ export default function EditEvent() {
           />
         ))}
       </FormGroup>
-
       {values.attendees.length > 0 && (
-        <Box style={{ marginTop: '2rem' }}>
-            <Typography variant="subtitle1">Attendees:</Typography>
-            <ul>
-            {values.attendees.map((attendee) =>
+        <>
+            <Typography variant="subtitle1" style={{ marginTop: '2rem' }}>
+            Attendees:
+            </Typography>
+            <ul style={{ paddingLeft: '1rem' }}>
+            {values.attendees.map((attendee) => (
                 <li key={typeof attendee === 'object' ? attendee._id : attendee}>
                 {typeof attendee === 'object' ? attendee.name : attendee}
                 </li>
-            )}
+            ))}
             </ul>
-        </Box>
+        </>
         )}
       <Button
         variant="contained"

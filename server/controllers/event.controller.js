@@ -46,21 +46,31 @@ export const getEventById = async (req, res) => {
 };
 
 export const getUserEvents = async (req, res) => {
-  try {
-    const events = await Event.find({
-      $or: [
-        { creatorId: req.auth._id },
-        { invitedUsers: req.auth._id },
-        { attendees: req.auth._id }
-      ]
-    });
-
-    res.json(events);
-  } catch (err) {
-    res.status(500).json({ error: 'Could not retrieve events' });
-  }
+    try {
+      const events = await Event.find({
+        $or: [
+          { creatorId: req.auth._id },
+          { attendees: req.auth._id }  // Only show if accepted
+        ]
+      });
+  
+      res.json(events);
+    } catch (err) {
+      res.status(500).json({ error: 'Could not retrieve events' });
+    }
 };
 
+export const getInvitations = async (req, res) => {
+    try {
+      const invites = await Invitation.find({ inviteeId: req.auth._id, status: 'Pending' })
+        .populate('eventId inviterId');
+  
+      res.json(invites);
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch invitations' });
+    }
+};
+  
 export const updateEvent = async (req, res) => {
     try {
         const updated = await Event.findOneAndUpdate(
@@ -87,23 +97,34 @@ export const deleteEvent = async (req, res) => {
   
 
 export const respondToInvitation = async (req, res) => {
-  try {
-    const { eventId, response } = req.body; // 'Accepted' or 'Declined'
-
-    const invitation = await Invitation.findOneAndUpdate(
-      { eventId, inviteeId: req.auth._id },
-      { status: response },
-      { new: true }
-    );
-
-    if (response === 'Accepted') {
-      await Event.findByIdAndUpdate(eventId, {
-        $addToSet: { attendees: req.auth._id }
+    try {
+      const { eventId, response } = req.body; // expected 'Accepted' or 'Declined'
+      const userId = req.auth._id;
+  
+      // Check if the user was actually invited
+      const invitation = await Invitation.findOne({
+        eventId,
+        inviteeId: userId
       });
+  
+      if (!invitation) {
+        return res.status(404).json({ error: 'Invitation not found' });
+      }
+  
+      // Update the status
+      invitation.status = response;
+      await invitation.save();
+  
+      // If accepted, add user to attendees (without duplication)
+      if (response === 'Accepted') {
+        await Event.findByIdAndUpdate(eventId, {
+          $addToSet: { attendees: userId }
+        });
+      }
+  
+      res.json({ message: `You have ${response.toLowerCase()} the invitation.` });
+    } catch (err) {
+      console.error('Failed to respond to invitation:', err);
+      res.status(500).json({ error: 'Failed to respond to invitation' });
     }
-
-    res.json({ message: `You have ${response.toLowerCase()} the invitation.` });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to respond to invitation' });
-  }
-};
+  };

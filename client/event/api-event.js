@@ -31,34 +31,35 @@ const createEvent = async (event, credentials) => {
   
   const getInvitations = async (credentials) => {
     try {
-      let response = await fetch('/api/invitations', {
+      const response = await fetch('/api/invitations', {
         method: 'GET',
         headers: {
+          Accept: 'application/json',
           Authorization: 'Bearer ' + credentials.t
         }
       });
       return await response.json();
     } catch (err) {
-      console.error(err);
+      console.error('❌ Error fetching invitations:', err);
     }
   };
   
-  const respondToInvitation = async (body, credentials) => {
+  const respondToInvitation = async (invitationData, credentials) => {
     try {
-      let response = await fetch('/api/events/invite/respond', {
+      const response = await fetch('/api/events/invite/respond', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + credentials.t
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify(invitationData)
       });
       return await response.json();
     } catch (err) {
-      console.error(err);
+      console.error('❌ Error responding to invitation:', err);
     }
   };
-
+  
   const deleteEvent = async (eventId, credentials) => {
     try {
       let response = await fetch(`/api/events/${eventId}`, {
@@ -78,6 +79,7 @@ const createEvent = async (event, credentials) => {
       let response = await fetch(`/api/events/${eventId}`, {
         method: 'GET',
         headers: {
+          Accept: 'application/json',
           Authorization: 'Bearer ' + credentials.t
         }
       });
@@ -85,7 +87,8 @@ const createEvent = async (event, credentials) => {
     } catch (err) {
       console.error(err);
     }
-  };  
+  };
+  
   
   const updateEvent = async (eventId, event, credentials) => {
     try {
@@ -104,6 +107,7 @@ const createEvent = async (event, credentials) => {
   };
   
   export {
+    createEvent,
     readEvent,
     deleteEvent,
     updateEvent,
